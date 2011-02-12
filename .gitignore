@@ -1,0 +1,6 @@
+# Ignore all files except README, *.c, and .gitignore #
+#######################################################
+*
+!*.c
+!.gitignore
+!README

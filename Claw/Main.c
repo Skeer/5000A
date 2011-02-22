@@ -1,5 +1,6 @@
-#pragma config(Sensor, in1,    p1,                  sensorPotentiometer)
-#pragma config(Sensor, in2,    p2,                  sensorPotentiometer)
+#pragma config(Sensor, in1,    ArmPotentiometer1,   sensorPotentiometer)
+#pragma config(Sensor, in2,    ArmPotentiometer2,   sensorPotentiometer)
+#pragma config(Sensor, in3,    ClawPotentiometer,   sensorPotentiometer)
 #pragma config(Sensor, dgtl1,  QuadCenter,          sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  QuadLeft,            sensorQuadEncoder)
 #pragma config(Sensor, dgtl5,  QuadRight,           sensorQuadEncoder)
@@ -14,7 +15,7 @@
 #pragma config(Motor,  port4,           DriveRightFront, tmotorNormal, openLoop)
 #pragma config(Motor,  port5,           DriveRightRear, tmotorNormal, openLoop)
 #pragma config(Motor,  port6,           Arm1,          tmotorNormal, openLoop, reversed)
-#pragma config(Motor,  port7,           Spinner,       tmotorNormal, openLoop)
+#pragma config(Motor,  port7,           Claw,          tmotorNormal, openLoop)
 #pragma config(Motor,  port8,           Arm3,          tmotorNormal, openLoop, reversed)
 #pragma config(Motor,  port9,           Arm4,          tmotorNormal, openLoop)
 #pragma config(Motor,  port10,          Arm2,          tmotorNormal, openLoop, reversed)
@@ -34,24 +35,27 @@
 
 void pre_auton()
 {
+    SensorValue[QuadCenter] = 0;
+    SensorValue[QuadLeft] = 0;
+    SensorValue[QuadRight] = 0;
 }
 
 task autonomous()
 {
     // Delta for reference
-    Up();
+    //Up();
     Trim();
 
     if(SensorValue[j1]) // blue
     {
         if(SensorValue[j2]) //normal
         {
-           //Gamma();
+            //Gamma();
         }
         else // oppo
         {
             //Alpha();
-       }
+        }
     }
     else // red
     {
@@ -79,6 +83,8 @@ task usercontrol()
     bool wall = false;
     bool base = false;
     bool down = false;
+    bool close = false;
+    bool open = false;
 
     while (true)
     {
@@ -112,9 +118,9 @@ task usercontrol()
         }
         else if(wall)
         {
-            if(SensorValue[p1] + SensorValue[p2] != 2891) //2502 -> 2891
+            if(SensorValue[ArmPotentiometer1] + SensorValue[ArmPotentiometer2] != 2891) //2502 -> 2891
             {
-                Arm(520 - (SensorValue[p1] + SensorValue[p2]) / 6);
+                Arm(520 - (SensorValue[ArmPotentiometer1] + SensorValue[ArmPotentiometer2]) / 6);
             }
             else
             {
@@ -123,9 +129,9 @@ task usercontrol()
         }
         else if(base)
         {
-            if(SensorValue[p1] + SensorValue[p2] != 2212) //2060 -> 2212
+            if(SensorValue[ArmPotentiometer1] + SensorValue[ArmPotentiometer2] != 2212) //2060 -> 2212
             {
-                Arm(271 - (SensorValue[p1] + SensorValue[p2]) / 10);
+                Arm(271 - (SensorValue[ArmPotentiometer1] + SensorValue[ArmPotentiometer2]) / 10);
             }
             else
             {
@@ -134,7 +140,7 @@ task usercontrol()
         }
         else if(down)
         {
-            if(SensorValue[p1] + SensorValue[p2] > 12)
+            if(SensorValue[ArmPotentiometer1] + SensorValue[ArmPotentiometer2] > 12)
             {
                 Arm(-127);
             }
@@ -148,13 +154,33 @@ task usercontrol()
             Trim();
         }
 
-        if(vexRT[Btn5U])
+        // 139 for open max
+        if(close)
         {
-            Down();
+            Close();
         }
-        else
+        else if (open)
         {
-            Up();
+            if(SensorValue[ClawPotentiometer] < 500)
+            {
+                Open();
+            }
+            else
+            {
+                motor[Claw] = 0;
+                open = false;
+            }
+        }
+
+        if(vexRT[Btn6U])
+        {
+            open = true;
+            close = false;
+        }
+        else if(vexRT[Btn5U])
+        {
+            open = false;
+            close = true;
         }
 
         if(vexRT[Btn8D])

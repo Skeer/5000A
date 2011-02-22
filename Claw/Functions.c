@@ -49,14 +49,14 @@ void Trim()
     motor[Arm4] = 20;
 }
 
-void Up()
+void Open()
 {
-    motor[Spinner] = 127;
+    motor[Claw] = 127;
 }
 
-void Down()
+void Close()
 {
-    motor[Spinner] = -127;
+    motor[Claw] = -127;
 }
 
 void Stop()
@@ -68,14 +68,14 @@ void Stop()
 
 void LeftBrake()
 {
-    motor[DriveLeftFront] = -20;
-    motor[DriveLeftRear] = 20;
+    motor[DriveLeftFront] = 30;
+    motor[DriveLeftRear] = -30;
 }
 
 void RightBrake()
 {
-    motor[DriveRightFront] = -20;
-    motor[DriveRightRear] = 20;
+    motor[DriveRightFront] = 30;
+    motor[DriveRightRear] = -30;
 }
 
 void SafetyBrake()
@@ -254,9 +254,9 @@ break;
 
 void Forward(int left, int right)
 {
-    while(SensorValue[QuadLeft] < left - 3 || SensorValue[QuadRight] < right - 3)
+    while(SensorValue[QuadLeft] < left - 10 || SensorValue[QuadRight] < right - 10)
     {
-        if(SensorValue[QuadLeft] < left - 3)
+        if(SensorValue[QuadLeft] < left - 10)
         {
             DriveLeft(0.6 * (left - SensorValue[QuadLeft]) + 20);
         }
@@ -265,7 +265,7 @@ void Forward(int left, int right)
             LeftBrake();
         }
 
-        if(SensorValue[QuadRight] < right - 3)
+        if(SensorValue[QuadRight] < right - 10)
         {
             DriveRight(0.6 * (right - SensorValue[QuadRight]) + 20);
         }
@@ -279,24 +279,24 @@ void Forward(int left, int right)
 
 void Backward(int left, int right)
 {
-    while(SensorValue[QuadLeft] > left + 3 || SensorValue[QuadRight] > right + 3)
+    while(SensorValue[QuadLeft] > left + 10 || SensorValue[QuadRight] > right + 10)
     {
-        if(SensorValue[QuadLeft] > left + 3)
+        if(SensorValue[QuadLeft] > left + 10)
         {
             DriveLeft(0.6 * (left - SensorValue[QuadLeft]) - 20);
         }
         else
         {
-            LeftBrake();
+            DriveLeft(-20);
         }
 
-        if(SensorValue[QuadRight] > right + 3)
+        if(SensorValue[QuadRight] > right + 10)
         {
             DriveRight(0.6 * (right - SensorValue[QuadRight]) - 20);
         }
         else
         {
-            RightBrake();
+            DriveRight(-20);
         }
     }
     SafetyBrake();
@@ -304,10 +304,10 @@ void Backward(int left, int right)
 
 void TurnLeft(int left, int right)
 {
-    while(SensorValue[QuadLeft] > left + 3 || SensorValue[QuadRight] < right - 3)
+    while(SensorValue[QuadLeft] > left + 34 || SensorValue[QuadRight] < right - 3)
     {
 
-        if(SensorValue[QuadLeft] > left + 3)
+        if(SensorValue[QuadLeft] > left + 34)
         {
             DriveLeft(0.6 * (left - SensorValue[QuadLeft]) - 20);
         }
@@ -330,10 +330,10 @@ void TurnLeft(int left, int right)
 
 void TurnRight(int left, int right)
 {
-    while(SensorValue[QuadLeft] < left - 3 || SensorValue[QuadRight] > right + 3)
+    while(SensorValue[QuadLeft] < left - 8 || SensorValue[QuadRight] > right + 19)
     {
 
-        if(SensorValue[QuadLeft] < left - 3)
+        if(SensorValue[QuadLeft] < left - 8)
         {
             DriveLeft(0.6 * (left - SensorValue[QuadLeft]) + 20);
         }
@@ -342,7 +342,7 @@ void TurnRight(int left, int right)
             LeftBrake();
         }
 
-        if(SensorValue[QuadRight] > right + 3)
+        if(SensorValue[QuadRight] > right + 19)
         {
             DriveRight(0.6 * (right - SensorValue[QuadRight]) - 20);
         }
@@ -360,7 +360,7 @@ void Left(int center)
     RightBrake();
     motor[DriveCenter] = 127;
     while(SensorValue[QuadCenter] < center - 3);
-    motor[DriveCenter] = -60;
+    motor[DriveCenter] = -20;
     SafetyBrake();
 }
 
@@ -370,7 +370,7 @@ void Right(int center)
     RightBrake();
     motor[DriveCenter] = -127;
     while(SensorValue[QuadCenter] > center + 3);
-    motor[DriveCenter] = 60;
+    motor[DriveCenter] = 20;
     SafetyBrake();
 }
 
@@ -382,9 +382,9 @@ int GetDonutCount()
 void ArmBase()
 {
     // INFO: Moves arm to base position
-    while(SensorValue[p1] + SensorValue[p2] < 2212)
+    while(SensorValue[ArmPotentiometer1] + SensorValue[ArmPotentiometer2] < 2212)
     {
-        Arm(275 - (SensorValue[p1] + SensorValue[p2]) / 10);
+        Arm(275 - (SensorValue[ArmPotentiometer1] + SensorValue[ArmPotentiometer2]) / 10);
     }
     Trim();
 }
@@ -392,49 +392,9 @@ void ArmBase()
 void ArmWall()
 {
     // INFO: Moves arm to wall position
-    while(SensorValue[p1] + SensorValue[p2] < 2885)
+    while(SensorValue[ArmPotentiometer1] + SensorValue[ArmPotentiometer2] < 2885)
     {
-        Arm(540 - (SensorValue[p1] + SensorValue[p2]) / 6);
+        Arm(540 - (SensorValue[ArmPotentiometer1] + SensorValue[ArmPotentiometer2]) / 6);
     }
     Trim();
-}
-
-void PickUp4()
-{
-    int count = GetDonutCount();
-
-    count += 4;
-
-    if(count > 6)
-    {
-        count = 6;
-    }
-
-    Arm(-127);
-    while(SensorValue[p1] + SensorValue[p2] > 400);
-    Trim();
-
-    Forward(SensorValue[QuadLeft] + 30, SensorValue[QuadRight] + 30);
-
-    Arm(-127);
-    while(SensorValue[p1] + SensorValue[p2] > 100);
-    Trim();
-
-    while(GetDonutCount() < count);
-}
-
-void Drop(int count)
-{
-    // NOTE: 0 and 1 are current considered the same,
-    //       it is caused by the descoring system
-    count = GetDonutCount() - count;
-
-    if(count < 0)
-    {
-        count = 0;
-    }
-
-    Down();
-    while(GetDonutCount() > count);
-    Up();
 }

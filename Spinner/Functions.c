@@ -93,8 +93,8 @@ void Forward(int left, int right)
     QRight += right;
 
     // Change these values, read below. Constants are always positive.
-    int leftConstant = 0;
-    int rightConstant = 0;
+    int leftConstant = 5;
+    int rightConstant = 5;
 
     // Run Forward(85, 85) and see what values are the result.
     // Ex: If Forward(85, 85) grants you 96, 96 quad encoder values,
@@ -132,14 +132,14 @@ void Backward(int left, int right)
     QLeft += left;
     QRight += right;
 
-    int leftConstant = 0;
-    int rightConstant = 0;
+    int leftConstant = 18;
+    int rightConstant = 18;
 
     while(SensorValue[QuadLeft] > QLeft + leftConstant || SensorValue[QuadRight] > QRight + rightConstant)
     {
         if(SensorValue[QuadLeft] > QLeft + leftConstant)
         {
-            DriveLeft(30);
+            DriveLeft(-30);
         }
         else
         {
@@ -148,7 +148,7 @@ void Backward(int left, int right)
 
         if(SensorValue[QuadRight] > QRight + rightConstant)
         {
-            DriveRight(30);
+            DriveRight(-30);
         }
         else
         {
@@ -164,14 +164,14 @@ void TurnLeft(int left, int right)
     QLeft += left;
     QRight += right;
 
-    int leftConstant = 0;
-    int rightConstant = 0;
+    int leftConstant = 10;
+    int rightConstant = -9;
 
     while(SensorValue[QuadLeft] > QLeft + leftConstant || SensorValue[QuadRight] < QRight - rightConstant)
     {
         if(SensorValue[QuadLeft] > QLeft + leftConstant)
         {
-            DriveLeft(30);
+            DriveLeft(-30);
         }
         else
         {
@@ -196,8 +196,8 @@ void TurnRight(int left, int right)
     QLeft += left;
     QRight += right;
 
-    int leftConstant = 0;
-    int rightConstant = 0;
+    int leftConstant = -2;
+    int rightConstant = 2;
 
     while(SensorValue[QuadLeft] < QLeft - leftConstant || SensorValue[QuadRight] > QRight + rightConstant)
     {
@@ -212,7 +212,7 @@ void TurnRight(int left, int right)
 
         if(SensorValue[QuadRight] > QRight + rightConstant)
         {
-            DriveRight(30);
+            DriveRight(-30);
         }
         else
         {
@@ -401,7 +401,7 @@ void PickUp4()
     while(SensorValue[p1] + SensorValue[p2] > 400);
     Trim();
 
-    Forward(30, 30);
+    Forward(40, 40);
 
     Arm(-127);
     // Modify this value (40) if it isn't picking up enough,

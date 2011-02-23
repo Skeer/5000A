@@ -61,7 +61,7 @@ task autonomous()
     // If you cannot get a range of 10 while keeping the constants the same,
     // the left and right values may have to be done seperately.
 
-    Forward(85, 85);
+    Delta();
 
     // After Forward constants have been set, proceed to work on Backward, then TurnLeft, then TurnRight.
     // Backward(-85, -85);
@@ -99,6 +99,7 @@ task autonomous()
     }
 }
 
+int count;
 task usercontrol()
 {
     if(vexRT[Btn5D] && vexRT[Btn5U] && vexRT[Btn6D] && vexRT[Btn6U])
@@ -115,6 +116,7 @@ task usercontrol()
 
     while (true)
     {
+        count = GetDonutCount();
         Drive(multiplier);
 
         if(vexRT[Btn7U])

@@ -306,7 +306,6 @@ void TurnLeft(int left, int right)
 {
     while(SensorValue[QuadLeft] > left + 34 || SensorValue[QuadRight] < right - 3)
     {
-
         if(SensorValue[QuadLeft] > left + 34)
         {
             DriveLeft(0.6 * (left - SensorValue[QuadLeft]) - 20);
@@ -332,7 +331,6 @@ void TurnRight(int left, int right)
 {
     while(SensorValue[QuadLeft] < left - 8 || SensorValue[QuadRight] > right + 19)
     {
-
         if(SensorValue[QuadLeft] < left - 8)
         {
             DriveLeft(0.6 * (left - SensorValue[QuadLeft]) + 20);

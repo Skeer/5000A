@@ -12,9 +12,11 @@ void Delta()
 
     PickUp4();
 
-    Left(312);
+    ArmBase();
 
-    Forward(99, 99);
+    Left(330);
+
+    Forward(180, 180);
 
     Drop(3);
 

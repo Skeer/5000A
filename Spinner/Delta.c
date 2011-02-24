@@ -8,25 +8,34 @@ void Delta()
 
     ArmBase();
 
-    Forward(91, 91);
+    Forward(101, 101);
 
     PickUp4();
 
     ArmBase();
 
-    Left(330);
+    //Left(330);
+    while(SensorValue[QuadCenter] < 330);
 
     Forward(180, 180);
 
     Drop(3);
 
+    ArmWall();
+
     Backward(-201, -201);
 
-    TurnRight(85, -85);
+    TurnRight(192, -192);
 
-    Forward(84, 84);
+    Forward(260, 260);
 
     Down();
+
+    while(GetDonutCount() > 0);
+
+    wait1Msec(1000);
+
+    Backward(-120, -120);
 
 
     /*

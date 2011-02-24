@@ -61,8 +61,6 @@ task autonomous()
     // If you cannot get a range of 10 while keeping the constants the same,
     // the left and right values may have to be done seperately.
 
-    Delta();
-
     // After Forward constants have been set, proceed to work on Backward, then TurnLeft, then TurnRight.
     // Backward(-85, -85);
     // TurnLeft(-85, 85);
@@ -73,18 +71,16 @@ task autonomous()
     // or
     // Right(300);
 
-    return;
-
     if(SensorValue[j1]) // blue
     {
         if(SensorValue[j2]) //normal
         {
-           //Gamma();
+            //Gamma();
         }
         else // oppo
         {
             //Alpha();
-       }
+        }
     }
     else // red
     {
@@ -113,6 +109,8 @@ task usercontrol()
     bool wall = false;
     bool base = false;
     bool down = false;
+    bool macro = false;
+    int id = 0;
 
     while (true)
     {
@@ -124,18 +122,21 @@ task usercontrol()
             wall = true;
             base = false;
             down = false;
+            macro = false;
         }
         else if(vexRT[Btn7D])
         {
             wall = false;
             base = true;
             down = false;
+            macro = false;
         }
         else if(vexRT[Btn7L])
         {
             wall = false;
             base = false;
             down = true;
+            macro = false;
         }
 
         if(vexRT[Ch2] > 20 || vexRT[Ch2] < -20)
@@ -144,6 +145,7 @@ task usercontrol()
             wall = false;
             base = false;
             down = false;
+            macro = false;
         }
         else if(wall)
         {
@@ -178,16 +180,17 @@ task usercontrol()
                 down = false;
             }
         }
-        else
+        else if(!macro)
         {
             Trim();
         }
 
         if(vexRT[Btn5U])
         {
+            macro = false;
             Down();
         }
-        else
+        else if(!macro)
         {
             Up();
         }
@@ -207,6 +210,98 @@ task usercontrol()
         else if(vexRT[Btn8R])
         {
             multiplier = 1;
+        }
+
+        if(macro)
+        {
+            // macro id's
+            // 1 = pick up 4
+            switch (id)
+            {
+            case 1:
+                if(SensorValue[p1] + SensorValue[p2] > 400)
+                {
+                    Arm(-127);
+                }
+                else
+                {
+                    Trim();
+
+                    if(SensorValue[QuadLeft] < 35)
+                    {
+                        DriveLeft(30);
+                    }
+                    else
+                    {
+                        LeftBrake();
+                    }
+
+                    if(SensorValue[QuadRight] < 35)
+                    {
+                        DriveRight(30);
+                    }
+                    else
+                    {
+                        RightBrake();
+                    }
+
+                    Arm(-127);
+                    // Modify this value (40) if it isn't picking up enough,
+                    // if that still doesn't work, consider moving the Trim() function to after the last while loop.
+                    if(SensorValue[p1] + SensorValue[p2] > 40)
+                    {
+                        Arm(-127);
+                    }
+                    else
+                    {
+                        if(SensorValue[p1] + SensorValue[p2] < 2212) //2060 -> 2212
+                        {
+                            Arm(271 - (SensorValue[p1] + SensorValue[p2]) / 10);
+                        }
+                        else
+                        {
+                            Trim();
+                        macro = false;
+                        id = 0;
+                        }
+                    }
+                }
+                break;
+            case 2:
+                if(GetDonutCount() > 0)
+                {
+                    Down();
+                }
+                else
+                {
+                    Up();
+                    macro = false;
+                    id = 0;
+                }
+                break;
+            }
+        }
+
+        if(vexRT[Btn6U])
+        {
+            wall = false;
+            base = false;
+            down = false;
+            macro = true;
+
+            SensorValue[QuadCenter] = 0;
+            SensorValue[QuadLeft] = 0;
+            SensorValue[QuadRight] = 0;
+
+            if(GetDonutCount() < 3 && SensorValue[p1] + SensorValue[p2] > 1500 && SensorValue[p1] + SensorValue[p2] < 2212)
+            {
+                id = 1;
+            }
+            else if(GetDonutCount() > 0 && SensorValue[p1] + SensorValue[p2] >= 2212)
+            {
+                // NOTE: No point of this.............
+                id = 2;
+            }
         }
     }
 }

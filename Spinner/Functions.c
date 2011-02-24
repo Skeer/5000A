@@ -171,7 +171,7 @@ void TurnLeft(int left, int right)
     {
         if(SensorValue[QuadLeft] > QLeft + leftConstant)
         {
-            DriveLeft(-30);
+            DriveLeft(-40);
         }
         else
         {
@@ -180,7 +180,7 @@ void TurnLeft(int left, int right)
 
         if(SensorValue[QuadRight] < QRight - rightConstant)
         {
-            DriveRight(30);
+            DriveRight(40);
         }
         else
         {
@@ -203,7 +203,7 @@ void TurnRight(int left, int right)
     {
         if(SensorValue[QuadLeft] < QLeft - leftConstant)
         {
-            DriveLeft(30);
+            DriveLeft(40);
         }
         else
         {
@@ -212,7 +212,7 @@ void TurnRight(int left, int right)
 
         if(SensorValue[QuadRight] > QRight + rightConstant)
         {
-            DriveRight(-30);
+            DriveRight(-40);
         }
         else
         {
@@ -251,118 +251,13 @@ void Right(int center)
     motor[DriveCenter] = 0;
     SafetyBrake();
 }
-/*
-void Forward(int left, int right)
-{
-//    left += left;
-//    right += right;
-
-    while(SensorValue[QuadLeft] < left - 25 || SensorValue[QuadRight] < right - 25)
-    {
-        if(SensorValue[QuadLeft] < left - 25)
-        {
-            DriveLeft(0.6 * (left - SensorValue[QuadLeft]) + 20);
-        }
-        else
-        {
-            LeftBrake();
-        }
-
-        if(SensorValue[QuadRight] < right - 25)
-        {
-            DriveRight(0.6 * (right - SensorValue[QuadRight]) + 20);
-        }
-        else
-        {
-            RightBrake();
-        }
-    }
-    SafetyBrake();
-}
-
-void Backward(int left, int right)
-{
-//    left += left;
-//    right += right;
-
-    while(SensorValue[QuadLeft] > left + 10 || SensorValue[QuadRight] > right + 10)
-    {
-        if(SensorValue[QuadLeft] > left + 10)
-        {
-            DriveLeft(0.6 * (left - SensorValue[QuadLeft]) - 20);
-        }
-        else
-        {
-            DriveLeft(-20);
-        }
-
-        if(SensorValue[QuadRight] > right + 10)
-        {
-            DriveRight(0.6 * (right - SensorValue[QuadRight]) - 20);
-        }
-        else
-        {
-            DriveRight(-20);
-        }
-    }
-    SafetyBrake();
-}
-
-void TurnLeft(int left, int right)
-{
-    while(SensorValue[QuadLeft] > left + 34 || SensorValue[QuadRight] < Right - 3)
-    {
-
-        if(SensorValue[QuadLeft] > Left + 34)
-        {
-            DriveLeft(0.6 * (Left - SensorValue[QuadLeft]) - 20);
-        }
-        else
-        {
-            LeftBrake();
-        }
-
-        if(SensorValue[QuadRight] < right - 3)
-        {
-            DriveRight(0.6 * (right - SensorValue[QuadRight]) + 20);
-        }
-        else
-        {
-            RightBrake();
-        }
-    }
-    SafetyBrake();
-}
-
-void TurnRight(int left, int right)
-{
-    while(SensorValue[QuadLeft] < left - 8 || SensorValue[QuadRight] > right + 19)
-    {
-
-        if(SensorValue[QuadLeft] < left - 8)
-        {
-            DriveLeft(0.6 * (left - SensorValue[QuadLeft]) + 20);
-        }
-        else
-        {
-            LeftBrake();
-        }
-
-        if(SensorValue[QuadRight] > right + 19)
-        {
-            DriveRight(0.6 * (right - SensorValue[QuadRight]) - 20);
-        }
-        else
-        {
-            RightBrake();
-        }
-    }
-    SafetyBrake();
-}
-*/
 
 int GetDonutCount()
 {
+    // Calibrate
+
+    // THE PORTS ARE JUST WRONG LOL
+
     return (352 - SensorValue[DonutSonar]) / 51;
 }
 
@@ -423,5 +318,14 @@ void Drop(int count)
 
     Down();
     while(GetDonutCount() > count);
+    Up();
+}
+
+void DropAll()
+{
+    Down();
+    while(GetDonutCount() > 0);
+    // May have to tweak wait time.
+    wait1Msec(100);
     Up();
 }

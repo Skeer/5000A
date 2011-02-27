@@ -1,4 +1,5 @@
 #include "Config.c"
+#include "Vex_Competition_Includes.c"
 #include "Functions.c"
 #include "Autonomous.c"
 

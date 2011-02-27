@@ -13,7 +13,7 @@ void Gamma()
     Right(-Step2);
 
     Forward(Step3, Step3);
-    //Drop(3);
+
     Drop(3);
 
     ArmWall();

@@ -1,12 +1,12 @@
 // Defined quad encoder values
-int step1 = 101;
-int step2 = 330;
-int step3 = 162;
-int step4a = 191;
-int step4b = 391;
-int step5 = 182;
-int step6 = 245;
-int step7 = 120;
+int Step1 = 101;
+int Step2 = 330;
+int Step3 = 162;
+int Step4A = 391;
+int Step4B = 191;
+int Step5 = 182;
+int Step6 = 245;
+int Step7 = 120;
 
 #include "Alpha.c"
 #include "Beta.c"
@@ -18,10 +18,16 @@ void pre_auton()
     QCenter = 0;
     QLeft = 0;
     QRight = 0;
+
+    SensorValue[QuadCenter] = 0;
+    SensorValue[QuadLeft] = 0;
+    SensorValue[QuadRight] = 0;
 }
 
 task autonomous()
 {
+    StartTask(velocitycalculator);
+
     if(SensorValue[J1]) // blue
     {
         if(SensorValue[J2]) //normal
@@ -44,4 +50,6 @@ task autonomous()
             Delta();
         }
     }
+
+    StopTask(velocitycalculator);
 }

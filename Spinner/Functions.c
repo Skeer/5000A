@@ -1,3 +1,30 @@
+// Velocity values
+int Velocity;
+int LeftVelocity;
+int RightVelocity;
+
+// Realtime velocity calculator
+task velocitycalculator()
+{
+    int leftInitial;
+    int rightInitial;
+    int leftFinal;
+    int rightFinal;
+
+    while(true)
+    {
+        leftInitial = SensorValue[QuadLeft];
+        rightInitial = SensorValue[QuadRight];
+        wait1Msec(100);
+        leftFinal = SensorValue[QuadLeft];
+        rightFinal = SensorValue[QuadRight];
+
+        Velocity = (leftFinal + rightFinal - leftInitial - rightInitial) * 5;
+        LeftVelocity = (leftFinal - leftInitial) * 10;
+        RightVelocity = (rightFinal - rightInitial) * 10;
+    }
+}
+
 // Actual encoder values
 int QCenter;
 int QLeft;
@@ -330,7 +357,8 @@ int GetRingCount()
 // Moves the arm to base height
 void ArmBase()
 {
-    while(SensorValue[P1] + SensorValue[P2] < 2212)
+    ClearTimer(T1);
+    while(SensorValue[P1] + SensorValue[P2] < 2212 && time1[T1] < 1000)
     {
         Arm(275 - (SensorValue[P1] + SensorValue[P2]) / 10);
     }
@@ -340,7 +368,8 @@ void ArmBase()
 // Moves the arm to wall height
 void ArmWall()
 {
-    while(SensorValue[P1] + SensorValue[P2] < 2700)
+    ClearTimer(T1);
+    while(SensorValue[P1] + SensorValue[P2] < 2700 && time1[T1] < 1000)
     {
         Arm(550 - (SensorValue[P1] + SensorValue[P2]) / 6);
     }
@@ -385,4 +414,23 @@ void DropAll()
     while(GetRingCount() > 0);
     wait1Msec(1000);
     Up();
+}
+
+void ForwardTillStop(int speed = 127)
+{
+    DriveLeft(speed);
+    DriveRight(speed);
+    wait1Msec(100);
+    while(LeftVelocity != 0 || RightVelocity != 0)
+    {
+        if(LeftVelocity == 0)
+        {
+            DriveLeft(0);
+        }
+
+        if(RightVelocity == 0)
+        {
+            DriveRight(0);
+        }
+    }
 }

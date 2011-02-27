@@ -4,30 +4,30 @@ void Beta()
 
     ArmBase();
 
-    Forward(step1, step1);
+    Forward(Step1, Step1);
 
     PickUp4();
 
     ArmBase();
 
-    Left(step2);
+    Left(Step2);
 
-    Forward(step3, step3);
+    Forward(Step3, Step3);
 
-    //Drop(3);
     Drop(3);
 
     ArmWall();
 
-    Backward(-step4b, -step4b);
+    Backward(-Step4A, -Step4A);
 
-    TurnRight(step5, -step5);
+    TurnRight(Step5, -Step5);
 
-    Forward(step6, step6);
+    //Forward(Step6, Step6);
+    ForwardTillStop();
 
     DropAll();
 
     Up();
 
-    Backward(-step7, -step7);
+    Backward(-Step7, -Step7);
 }

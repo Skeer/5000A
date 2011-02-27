@@ -1,15 +1,25 @@
+// Actual encoder values
+int QCenter;
+int QLeft;
+int QRight;
+
+// Sets the left drive motors to value
 void DriveLeft(int value)
 {
     motor[DriveLeftFront] = value;
     motor[DriveLeftRear] = value;
 }
 
+// Sets the right drive motors to value
 void DriveRight(int value)
 {
     motor[DriveRightFront] = value;
     motor[DriveRightRear] = value;
 }
 
+// User control drive
+// using arcade and multiplied by multiplier.
+// Center drive does not get affected my multiplier
 void Drive(float multiplier)
 {
     int x = vexRT[Ch4];
@@ -33,6 +43,7 @@ void Drive(float multiplier)
     }
 }
 
+// Arm control for both user and autonomous
 void Arm(int y = vexRT[Ch2])
 {
     motor[Arm1] = y;
@@ -41,24 +52,29 @@ void Arm(int y = vexRT[Ch2])
     motor[Arm4] = y;
 }
 
+// Continuously powering arm motors when idle
 void Trim()
 {
+    // Possiby no need of this function anymore because of tension
     motor[Arm1] = 20;
     motor[Arm2] = 20;
     motor[Arm3] = 20;
     motor[Arm4] = 20;
 }
 
+// Spinning upwards
 void Up()
 {
     motor[Spinner] = 127;
 }
 
+// Spinning downwards
 void Down()
 {
     motor[Spinner] = -127;
 }
 
+// Stopping all drive motors
 void Stop()
 {
     motor[DriveCenter] = 0;
@@ -66,18 +82,21 @@ void Stop()
     DriveRight(0);
 }
 
+// Applying brake to the left side
 void LeftBrake()
 {
     motor[DriveLeftFront] = 30;
     motor[DriveLeftRear] = -30;
 }
 
+// Applying brake to the right side
 void RightBrake()
 {
     motor[DriveRightFront] = 30;
     motor[DriveRightRear] = -30;
 }
 
+// Safety brake feature makes sure the robot has been braking for at least 100 milliseconds before continuing
 void SafetyBrake()
 {
     LeftBrake();
@@ -86,49 +105,71 @@ void SafetyBrake()
     Stop();
 }
 
+// Moves robot forward for left and right distance
 void Forward(int left, int right)
 {
-    // Hidden cumulative left and right values... Don't worry about them.
+    // Formatting user input values
+    if(left < 0)
+    {
+        left = -left;
+    }
+    if(right < 0)
+    {
+        right = -right;
+    }
+
+    // Hidden cumulative left and right values...
     QLeft += left;
     QRight += right;
 
-    // Change these values, read below. Constants are always positive.
+    // Calibrating left and right drives
+    // The larger it is, the earlier the drive stops
+    // The smaller it is, the later the drive stops
     int leftConstant = 5;
     int rightConstant = 5;
 
-    // Run Forward(85, 85) and see what values are the result.
-    // Ex: If Forward(85, 85) grants you 96, 96 quad encoder values,
-    // change the constant to -11
-    // Retest the functions for consistancy.
-    // Backwards should be the same, but you should test all main movement functions too.
-    // Forwards, Backwards, TurnLeft, TurnRight
-    // And if you want to test Left and Right, you can.
+    // Loop until both conditions have been satisfied
     while(SensorValue[QuadLeft] < QLeft - leftConstant || SensorValue[QuadRight] < QRight - rightConstant)
     {
+        // If left needs to move
         if(SensorValue[QuadLeft] < QLeft - leftConstant)
         {
+            // Driving left side
             DriveLeft(30);
         }
         else
         {
-            LeftBrake();
+            // Stopping left side
+            DriveLeft(0);
         }
 
         if(SensorValue[QuadRight] < QRight - rightConstant)
         {
+            // Driving right side
             DriveRight(30);
         }
         else
         {
-            RightBrake();
+            // Stopping right side
+            DriveLeft(0);
         }
     }
+    // Applying safety brake for safety measures
     SafetyBrake();
 }
 
-// Arguemnts to this function should be negative.
+// Moves robot backward for left and right distance
 void Backward(int left, int right)
 {
+    if(left > 0)
+    {
+        left = -left;
+    }
+    if(right > 0)
+    {
+        right = -right;
+    }
+
     QLeft += left;
     QRight += right;
 
@@ -158,9 +199,18 @@ void Backward(int left, int right)
     SafetyBrake();
 }
 
-// left should be negative, right should be positive.
+// Turns the robot left for left and right distance
 void TurnLeft(int left, int right)
 {
+    if(left > 0)
+    {
+        left = -left;
+    }
+    if(right < 0)
+    {
+        right = -right;
+    }
+
     QLeft += left;
     QRight += right;
 
@@ -190,9 +240,18 @@ void TurnLeft(int left, int right)
     SafetyBrake();
 }
 
-// left should be positive, right should be negative
+// Turns the robot right for left and right distance
 void TurnRight(int left, int right)
 {
+    if(left < 0)
+    {
+        left = -left;
+    }
+    if(right > 0)
+    {
+        right = -right;
+    }
+
     QLeft += left;
     QRight += right;
 
@@ -222,9 +281,14 @@ void TurnRight(int left, int right)
     SafetyBrake();
 }
 
-// center should be positive.
+// Moves the robot left for left distance
 void Left(int center)
 {
+    if(center < 0)
+    {
+        center = -center;
+    }
+
     QCenter += center;
 
     int centerConstant = 0;
@@ -237,9 +301,14 @@ void Left(int center)
     SafetyBrake();
 }
 
-// center should be negative
+// Moves the robot right for right distance
 void Right(int center)
 {
+    if(center > 0)
+    {
+        center = -center;
+    }
+
     QCenter += center;
 
     int centerConstant = 0;
@@ -252,64 +321,52 @@ void Right(int center)
     SafetyBrake();
 }
 
-int GetDonutCount()
+// Retrieves the count of rings currently in possession of
+int GetRingCount()
 {
-    // Calibrate
-
-    // THE PORTS ARE JUST WRONG LOL
-
     return (352 - SensorValue[DonutSonar]) / 51;
 }
 
+// Moves the arm to base height
 void ArmBase()
 {
-    // INFO: Moves arm to base position
-    while(SensorValue[p1] + SensorValue[p2] < 2212)
+    while(SensorValue[P1] + SensorValue[P2] < 2212)
     {
-        Arm(275 - (SensorValue[p1] + SensorValue[p2]) / 10);
+        Arm(275 - (SensorValue[P1] + SensorValue[P2]) / 10);
     }
     Trim();
 }
 
+// Moves the arm to wall height
 void ArmWall()
 {
-    // INFO: Moves arm to wall position
-    while(SensorValue[p1] + SensorValue[p2] < 2885)
+    while(SensorValue[P1] + SensorValue[P2] < 2700)
     {
-        Arm(540 - (SensorValue[p1] + SensorValue[p2]) / 6);
+        Arm(550 - (SensorValue[P1] + SensorValue[P2]) / 6);
     }
     Trim();
 }
 
+// Picks up 4 rings
 void PickUp4()
 {
-    int count = GetDonutCount();
-
-    count += 4;
-
-    if(count > 6)
-    {
-        count = 6;
-    }
-
     Arm(-127);
-    while(SensorValue[p1] + SensorValue[p2] > 400);
+    while(SensorValue[P1] + SensorValue[P2] > 400);
     Trim();
 
     Forward(40, 40);
 
     Arm(-127);
-    // Modify this value (40) if it isn't picking up enough,
-    // if that still doesn't work, consider moving the Trim() function to after the last while loop.
-    while(SensorValue[p1] + SensorValue[p2] > 40);
+    while(SensorValue[P1] + SensorValue[P2] > 30);
+    wait1Msec(500);
     Trim();
-
-    while(GetDonutCount() < count);
 }
 
+// Drops count number of rings
 void Drop(int count)
 {
-    count = GetDonutCount() - count;
+    // Remaining count
+    count = GetRingCount() - count;
 
     if(count < 0)
     {
@@ -317,15 +374,15 @@ void Drop(int count)
     }
 
     Down();
-    while(GetDonutCount() > count);
+    while(GetRingCount() > count);
     Up();
 }
 
+// Drops all rings with additional 1 second wait time
 void DropAll()
 {
     Down();
-    while(GetDonutCount() > 0);
-    // May have to tweak wait time.
-    wait1Msec(100);
+    while(GetRingCount() > 0);
+    wait1Msec(1000);
     Up();
 }

@@ -1,74 +1,33 @@
 void Beta()
 {
-  ArmBase();
+    Up();
 
-    Forward(30, 70); // 70
+    ArmBase();
+
+    Forward(step1, step1);
 
     PickUp4();
 
     ArmBase();
 
-    /*
-    TurnRight(40, 60);
+    Left(step2);
 
-    Forward(30, 250);
-    */
+    Forward(step3, step3);
 
-    // NOTE: Modify speed and distance if needed
-    // 300 original
-    Right(127, 300); //check
-
-    // NOTE: Modify distance if needed
-    Forward(30, 200, false);//check this
-
-    //Drop(5);
+    //Drop(3);
     Drop(3);
 
-    // NOTE: ArmWall has not been tested(?)
     ArmWall();
 
-    Backward(30, 750, false); // 205 need to check this value.
+    Backward(-step4b, -step4b);
 
-    // INFO: Turning to wall
-    TurnLeft(40, 170); // 200
+    TurnRight(step5, -step5);
 
-    Forward(30, 230); //check
-    Drop(GetDonutCount());
+    Forward(step6, step6);
 
+    DropAll();
 
-    /*
-    ArmBase();
+    Up();
 
-    Forward(30, 80); // 70
-
-    PickUp4();
-
-    ArmBase();
-
-    //TurnRight(40, 60);
-
-    //Forward(30, 250);
-
-    // NOTE: Modify speed and distance if needed
-    // 300 original
-    Right(127, 350);
-
-    // NOTE: Modify distance if needed
-    Forward(30, 200, false);
-
-    //Drop(5);
-    Drop(3);
-
-    // NOTE: ArmWall has not been tested
-    ArmWall();
-
-    Backward(30, 750, false); // 205
-
-    // INFO: Turning to wall
-    TurnLeft(40, 200); // 170
-
-    Forward(30, 230);
-
-    Drop(GetDonutCount());
-    */
+    Backward(-step7, -step7);
 }

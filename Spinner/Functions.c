@@ -1,3 +1,20 @@
+bool Out = false;
+
+task descore()
+{
+    if(Out)
+    {
+        motor[Descore] = -127;
+    }
+    else
+    {
+        motor[Descore] = 127;
+    }
+    wait1Msec(1250);
+    motor[Descore] = 0;
+    Out = !Out;
+}
+
 // Velocity values
 int Velocity;
 int LeftVelocity;
@@ -75,30 +92,38 @@ void Arm(int y = vexRT[Ch2])
 {
     motor[Arm1] = y;
     motor[Arm2] = y;
-    motor[Arm3] = y;
-    motor[Arm4] = y;
+    if(y > 0)
+    {
+        SensorValue[dgtl11] = 0;
+        SensorValue[dgtl12] = 0;
+    }
+    else
+    {
+        SensorValue[dgtl11] = 1;
+        SensorValue[dgtl12] = 1;
+    }
 }
 
 // Continuously powering arm motors when idle
 void Trim()
 {
     // Possiby no need of this function anymore because of tension
-    motor[Arm1] = 20;
-    motor[Arm2] = 20;
-    motor[Arm3] = 20;
-    motor[Arm4] = 20;
+    motor[Arm1] = 15;
+    motor[Arm2] = 15;
 }
 
 // Spinning upwards
 void Up()
 {
-    motor[Spinner] = 127;
+    motor[Spinner1] = 127;
+    motor[Spinner2] = 127;
 }
 
 // Spinning downwards
 void Down()
 {
-    motor[Spinner] = -127;
+    motor[Spinner1] = -127;
+    motor[Spinner2] = -127;
 }
 
 // Stopping all drive motors
@@ -133,7 +158,7 @@ void SafetyBrake()
 }
 
 // Moves robot forward for left and right distance
-void Forward(int left, int right)
+void Forward(int left, int right, int time = 20000)
 {
     // Formatting user input values
     if(left < 0)
@@ -144,6 +169,8 @@ void Forward(int left, int right)
     {
         right = -right;
     }
+
+    ClearTimer(T1);
 
     // Hidden cumulative left and right values...
     QLeft += left;
@@ -156,13 +183,13 @@ void Forward(int left, int right)
     int rightConstant = 5;
 
     // Loop until both conditions have been satisfied
-    while(SensorValue[QuadLeft] < QLeft - leftConstant || SensorValue[QuadRight] < QRight - rightConstant)
+    while(time1(T1) < time && (SensorValue[QuadLeft] < QLeft - leftConstant || SensorValue[QuadRight] < QRight - rightConstant))
     {
         // If left needs to move
         if(SensorValue[QuadLeft] < QLeft - leftConstant)
         {
             // Driving left side
-            DriveLeft(30);
+            DriveLeft(40);
         }
         else
         {
@@ -173,7 +200,7 @@ void Forward(int left, int right)
         if(SensorValue[QuadRight] < QRight - rightConstant)
         {
             // Driving right side
-            DriveRight(30);
+            DriveRight(40);
         }
         else
         {
@@ -207,20 +234,20 @@ void Backward(int left, int right)
     {
         if(SensorValue[QuadLeft] > QLeft + leftConstant)
         {
-            DriveLeft(-30);
+            DriveLeft(-40);
         }
         else
         {
-            LeftBrake();
+            DriveLeft(0);
         }
 
         if(SensorValue[QuadRight] > QRight + rightConstant)
         {
-            DriveRight(-30);
+            DriveRight(-40);
         }
         else
         {
-            RightBrake();
+            DriveLeft(0);
         }
     }
     SafetyBrake();
@@ -358,9 +385,9 @@ int GetRingCount()
 void ArmBase()
 {
     ClearTimer(T1);
-    while(SensorValue[P1] + SensorValue[P2] < 2212 && time1[T1] < 1000)
+    while(SensorValue[P1] + SensorValue[P2] < 2212 && time1[T1] < 3000)
     {
-        Arm(275 - (SensorValue[P1] + SensorValue[P2]) / 10);
+        Arm(127);
     }
     Trim();
 }
@@ -369,9 +396,9 @@ void ArmBase()
 void ArmWall()
 {
     ClearTimer(T1);
-    while(SensorValue[P1] + SensorValue[P2] < 2700 && time1[T1] < 1000)
+    while(SensorValue[P1] + SensorValue[P2] < 2700 && time1[T1] < 4500)
     {
-        Arm(550 - (SensorValue[P1] + SensorValue[P2]) / 6);
+        Arm(127);
     }
     Trim();
 }
@@ -383,7 +410,7 @@ void PickUp4()
     while(SensorValue[P1] + SensorValue[P2] > 400);
     Trim();
 
-    Forward(40, 40);
+    Forward(30, 30);
 
     Arm(-127);
     while(SensorValue[P1] + SensorValue[P2] > 30);
@@ -416,21 +443,22 @@ void DropAll()
     Up();
 }
 
-void ForwardTillStop(int speed = 127)
+void ForwardTillStop(int speed = 40)
 {
     DriveLeft(speed);
     DriveRight(speed);
-    wait1Msec(100);
+    wait1Msec(750);
     while(LeftVelocity != 0 || RightVelocity != 0)
     {
-        if(LeftVelocity == 0)
+        if(LeftVelocity <= 0)
         {
             DriveLeft(0);
         }
 
-        if(RightVelocity == 0)
+        if(RightVelocity <= 0)
         {
             DriveRight(0);
         }
     }
+    Stop();
 }

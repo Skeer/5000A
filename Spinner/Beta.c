@@ -12,9 +12,10 @@ void Beta()
 
     Left(Step2);
 
-    Forward(Step3, Step3);
+    Forward(Step3, Step3, 5000);
 
-    Drop(3);
+    DropAll();
+    //Drop(3);
 
     ArmWall();
 

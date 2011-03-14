@@ -1,8 +1,8 @@
 // Defined quad encoder values
 int Step1 = 101;
-int Step2 = 330;
-int Step3 = 162;
-int Step4A = 391;
+int Step2 = 345;
+int Step3 = 202;
+int Step4A = 421;
 int Step4B = 191;
 int Step5 = 182;
 int Step6 = 245;
@@ -26,13 +26,19 @@ void pre_auton()
 
 task autonomous()
 {
+    StartTask(descore);
+
     StartTask(velocitycalculator);
 
     if(SensorValue[J1]) // blue
     {
         if(SensorValue[J2]) //normal
         {
-            Alpha();
+            // RAM
+            ArmWall();
+
+            ForwardTillStop(127);
+
         }
         else // oppo
         {

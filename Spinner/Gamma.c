@@ -12,7 +12,7 @@ void Gamma()
 
     Right(-Step2);
 
-    Forward(Step3, Step3);
+    Forward(Step3, Step3, 5000);
 
     Drop(3);
 
